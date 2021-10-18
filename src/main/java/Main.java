@@ -1,6 +1,9 @@
 import java.time.LocalDate;
+import java.util.Calendar;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class Main {
@@ -124,10 +127,35 @@ public class Main {
         // (i.e. sum, average, max, min, count) for all products of category "Books" look DoubleSummaryStatistics
 
         //11 Obtain a data map with order id and order's product count
+        Map<Long, Integer> solution11 = orders.stream()
+                .collect(Collectors.toMap(Order::getId, o -> o.getProducts().size()));
+        for (Map.Entry entry : solution11.entrySet()) {
+            System.out.println(entry);
+        }
+        System.out.println();
 
         //12 Produce a data map with order records grouped by customer
+        Map<Customer, List<Order>> solution12 = orders.stream()
+                .collect(Collectors.groupingBy(Order::getCustomer));
+        for (Map.Entry entry : solution12.entrySet()) {
+            System.out.println(entry);
+        }
+        System.out.println();
 
         //13 Produce a data map with order record and product total sum
+        Map<Order, Double> solution13 = orders.stream()
+                .collect(Collectors.toMap(Function.identity(),
+                        o -> {
+                            double sum = 0;
+                            for (Product product : o.getProducts()) {
+                                sum += product.getPrice();
+                            }
+                            return sum;
+                        }));
+        for (Map.Entry entry : solution13.entrySet()) {
+            System.out.println(entry);
+        }
+        System.out.println();
 
         //14 Obtain a data map with list of product name by category
 
