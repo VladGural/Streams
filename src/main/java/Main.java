@@ -81,7 +81,16 @@ public class Main {
         System.out.println();
 
         //07 Get a list of orders which were ordered on 15-Mar-2021, log the order records to the console and then return its product list
-
+        List<Product> solution07 = orders.stream()
+                .filter(o -> o.getOrderDate().equals(LocalDate.of(2021, 3, 15)))
+                .peek(o -> System.out.println(o))
+                .flatMap(o -> o.getProducts().stream())
+                .distinct()
+                .collect(Collectors.toList());
+        for (Product product : solution07) {
+            System.out.println(product);
+        }
+        System.out.println();
 
         //08 Calculate total sum of all orders placed in Feb 2021
 
