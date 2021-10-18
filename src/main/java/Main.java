@@ -1,7 +1,16 @@
+import static java.util.stream.Collectors.toList;
+
 import java.time.LocalDate;
+import java.util.AbstractSequentialList;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.DoubleSummaryStatistics;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -30,7 +39,7 @@ public class Main {
         List<Product> solution01 = products.stream()
                 .filter(p -> p.getCategory().equals("Books")
                         && p.getPrice() > 100)
-                .collect(Collectors.toList());
+                .collect(toList());
         for (Product product : solution01) {
             System.out.println(product);
         }
@@ -46,7 +55,7 @@ public class Main {
                     }
                     return false;
                 })
-                .collect(Collectors.toList());
+                .collect(toList());
         for (Order order : solution02) {
             System.out.println(order);
         }
@@ -56,7 +65,7 @@ public class Main {
         List<Product> solution03 = products.stream()
                 .filter(p -> p.getCategory().equals("Toys"))
                 .map(p -> p.getProductWithDiscount(0.1))
-                .collect(Collectors.toList());
+                .collect(toList());
 
         for (Product product : solution03) {
             System.out.println(product);
@@ -86,7 +95,7 @@ public class Main {
         List<Order> solution06 = orders.stream()
                 .sorted((o1, o2) -> o2.getOrderDate().compareTo(o1.getOrderDate()))
                 .limit(3)
-                .collect(Collectors.toList());
+                .collect(toList());
         for (Order order : solution06) {
             System.out.println(order);
         }
@@ -98,7 +107,7 @@ public class Main {
                 .peek(System.out::println)
                 .flatMap(o -> o.getProducts().stream())
                 .distinct()
-                .collect(Collectors.toList());
+                .collect(toList());
         for (Product product : solution07) {
             System.out.println(product);
         }
@@ -118,18 +127,23 @@ public class Main {
         Double solution09 = orders.stream()
                 .filter(o -> o.getDeliveryDate().equals(LocalDate.of(2021, 3, 14)))
                 .flatMap(o -> o.getProducts().stream())
-                .mapToDouble(p -> p.getPrice())
+                .mapToDouble(Product::getPrice)
                 .average().getAsDouble();
         System.out.println(solution09);
         System.out.println();
 
         //10 Obtain a collection of statistic figures
         // (i.e. sum, average, max, min, count) for all products of category "Books" look DoubleSummaryStatistics
+        DoubleSummaryStatistics solution10 = products.stream()
+                .filter(p -> p.getCategory().equals("Books"))
+                .collect(Collectors.summarizingDouble(Product::getPrice));
+        System.out.println(solution10);
+        System.out.println();
 
         //11 Obtain a data map with order id and order's product count
         Map<Long, Integer> solution11 = orders.stream()
                 .collect(Collectors.toMap(Order::getId, o -> o.getProducts().size()));
-        for (Map.Entry entry : solution11.entrySet()) {
+        for (Map.Entry<Long, Integer> entry : solution11.entrySet()) {
             System.out.println(entry);
         }
         System.out.println();
@@ -137,7 +151,7 @@ public class Main {
         //12 Produce a data map with order records grouped by customer
         Map<Customer, List<Order>> solution12 = orders.stream()
                 .collect(Collectors.groupingBy(Order::getCustomer));
-        for (Map.Entry entry : solution12.entrySet()) {
+        for (Map.Entry<Customer, List<Order>> entry : solution12.entrySet()) {
             System.out.println(entry);
         }
         System.out.println();
@@ -152,15 +166,28 @@ public class Main {
                             }
                             return sum;
                         }));
-        for (Map.Entry entry : solution13.entrySet()) {
+        for (Map.Entry<Order, Double> entry : solution13.entrySet()) {
             System.out.println(entry);
         }
         System.out.println();
 
         //14 Obtain a data map with list of product name by category
+        Map<String, List<String>> solution14 = products.stream()
+                .collect(Collectors.groupingBy(Product::getCategory,
+                        Collectors.mapping(Product::getName, toList())));
+        for (Map.Entry<String, List<String>> entry : solution14.entrySet()) {
+            System.out.println(entry);
+        }
+        System.out.println();
 
         //15 Get the most expensive product by category
-
+        Map<String, Optional<Product>> solution15 = products.stream()
+                .collect(Collectors.groupingBy(Product::getCategory,
+                        Collectors.maxBy(Comparator.comparing(Product::getPrice))));
+        for (Map.Entry<String, Optional<Product>> entry : solution15.entrySet()) {
+            System.out.println(entry);
+        }
+        System.out.println();
     }
 }
 
