@@ -1,18 +1,27 @@
-import java.security.spec.RSAOtherPrimeInfo;
 import java.time.LocalDate;
-import java.util.Calendar;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 public class Main {
     public static void main(String[] args) {
         DataGenerator dataGenerator = new DataGenerator();
-        List<Customer> calendars = dataGenerator.getCustomers();
+        List<Customer> customers = dataGenerator.getCustomers();
         List<Product> products = dataGenerator.getProducts();
         List<Order> orders = dataGenerator.getOrders();
+        for (Customer customer : customers) {
+            System.out.println(customer);
+        }
+        System.out.println();
+        for (Product product : products) {
+            System.out.println(product);
+        }
+        System.out.println();
+        for (Order order : orders) {
+            System.out.println(order);
+        }
+        System.out.println();
+
 
         //01 Obtain a list of products belongs to category "Books" with price > 100
         List<Product> solution01 = products.stream()
@@ -83,7 +92,7 @@ public class Main {
         //07 Get a list of orders which were ordered on 15-Mar-2021, log the order records to the console and then return its product list
         List<Product> solution07 = orders.stream()
                 .filter(o -> o.getOrderDate().equals(LocalDate.of(2021, 3, 15)))
-                .peek(o -> System.out.println(o))
+                .peek(System.out::println)
                 .flatMap(o -> o.getProducts().stream())
                 .distinct()
                 .collect(Collectors.toList());
@@ -93,8 +102,23 @@ public class Main {
         System.out.println();
 
         //08 Calculate total sum of all orders placed in Feb 2021
+        Double solution08 = orders.stream()
+                .filter(o -> o.getOrderDate().isAfter(LocalDate.of(2021, 2, 1))
+                        && o.getOrderDate().isBefore(LocalDate.of(2021, 3, 1)))
+                .flatMap(o -> o.getProducts().stream())
+                .mapToDouble(Product::getPrice)
+                .sum();
+        System.out.println(solution08);
+        System.out.println();
 
         //09 Calculate order average payment placed on 14-Mar-2021
+        Double solution09 = orders.stream()
+                .filter(o -> o.getDeliveryDate().equals(LocalDate.of(2021, 3, 14)))
+                .flatMap(o -> o.getProducts().stream())
+                .mapToDouble(p -> p.getPrice())
+                .average().getAsDouble();
+        System.out.println(solution09);
+        System.out.println();
 
         //10 Obtain a collection of statistic figures
         // (i.e. sum, average, max, min, count) for all products of category "Books" look DoubleSummaryStatistics
@@ -102,7 +126,6 @@ public class Main {
         //11 Obtain a data map with order id and order's product count
 
         //12 Produce a data map with order records grouped by customer
-
 
         //13 Produce a data map with order record and product total sum
 
